@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 
 export function useI18n() {
   const [locale, setLocale] = useState(
@@ -52,13 +52,13 @@ export function useI18n() {
     }
   }
 
-  const t = (key) => {
+  const t = useCallback((key) => {
     return translations[key] || key
-  }
+  }, [translations])
 
-  const switchLocale = async (newLocale) => {
+  const switchLocale = useCallback(async (newLocale) => {
     setLocale(newLocale)
-  }
+  }, [])
 
   return { t, locale, switchLocale, isLoading }
 }
