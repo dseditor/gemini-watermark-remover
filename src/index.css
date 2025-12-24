@@ -1,0 +1,66 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  font-family: ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #10B981;
+  border-radius: 4px;
+}
+
+.step-arrow::after {
+  content: '';
+  position: absolute;
+  right: -10px;
+  top: 50%;
+  transform: translateY(-50%);
+  border-top: 15px solid transparent;
+  border-bottom: 15px solid transparent;
+  border-left: 15px solid #F3F4F6;
+  z-index: 10;
+}
+
+@media (min-width: 768px) {
+  .step-item:not(:last-child)::after {
+    content: '';
+    position: absolute;
+    right: -24px;
+    top: 0;
+    bottom: 0;
+    width: 24px;
+    background-color: inherit;
+    clip-path: polygon(0% 0%, 100% 50%, 0% 100%);
+    z-index: 20;
+  }
+  .step-item:not(:first-child) {
+    clip-path: polygon(0% 0%, 200% 0%, 100% 100%, 0% 100%, 24px 50%);
+  }
+}
+
+body.loading {
+  opacity: 0;
+}
+
+body {
+  transition: opacity 0s;
+}
+
+.medium-zoom-overlay,
+.medium-zoom-image--opened {
+  z-index: 999;
+}
+
+.medium-zoom-overlay {
+  backdrop-filter: blur(4px);
+}
