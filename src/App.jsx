@@ -28,7 +28,19 @@ function App() {
       try {
         setLoading(true)
         setLoadingText(t('status.loading'))
-        const engineInstance = await WatermarkEngine.create()
+        console.log('[App] 开始初始化 WatermarkEngine...')
+
+        // Add timeout to prevent hanging
+        const timeoutPromise = new Promise((_, reject) =>
+          setTimeout(() => reject(new Error('资源加载超时（10秒），请检查网络连接')), 10000)
+        )
+
+        const engineInstance = await Promise.race([
+          WatermarkEngine.create(),
+          timeoutPromise
+        ])
+
+        console.log('[App] WatermarkEngine 初始化成功')
         setEngine(engineInstance)
         setLoading(false)
 
@@ -40,7 +52,8 @@ function App() {
         })
       } catch (error) {
         setLoading(false)
-        console.error('初始化错误：', error)
+        console.error('[App] 初始化错误：', error)
+        alert(`初始化失败: ${error.message}\n\n请刷新页面重试，或按 F12 打开浏览器控制台查看详细错误信息。`)
       }
     }
 

@@ -62,23 +62,57 @@ export class WatermarkEngine {
     }
 
     static async create() {
+        console.log('[WatermarkEngine] 开始加载背景图片资源...');
+        console.log('[WatermarkEngine] bg_48 路径:', BG_48_PATH);
+        console.log('[WatermarkEngine] bg_96 路径:', BG_96_PATH);
+
         const bg48 = new Image();
         const bg96 = new Image();
 
-        await Promise.all([
-            new Promise((resolve, reject) => {
-                bg48.onload = resolve;
-                bg48.onerror = reject;
-                bg48.src = BG_48_PATH;
-            }),
-            new Promise((resolve, reject) => {
-                bg96.onload = resolve;
-                bg96.onerror = reject;
-                bg96.src = BG_96_PATH;
-            })
-        ]);
+        try {
+            await Promise.all([
+                new Promise((resolve, reject) => {
+                    const timeout = setTimeout(() => {
+                        reject(new Error('bg_48.png 加载超时（10秒）'));
+                    }, 10000);
 
-        return new WatermarkEngine({ bg48, bg96 });
+                    bg48.onload = () => {
+                        clearTimeout(timeout);
+                        console.log('[WatermarkEngine] bg_48.png 加载成功');
+                        resolve();
+                    };
+                    bg48.onerror = (err) => {
+                        clearTimeout(timeout);
+                        console.error('[WatermarkEngine] bg_48.png 加载失败:', err);
+                        reject(new Error(`背景图片 bg_48.png 加载失败，路径: ${BG_48_PATH}`));
+                    };
+                    bg48.src = BG_48_PATH;
+                }),
+                new Promise((resolve, reject) => {
+                    const timeout = setTimeout(() => {
+                        reject(new Error('bg_96.png 加载超时（10秒）'));
+                    }, 10000);
+
+                    bg96.onload = () => {
+                        clearTimeout(timeout);
+                        console.log('[WatermarkEngine] bg_96.png 加载成功');
+                        resolve();
+                    };
+                    bg96.onerror = (err) => {
+                        clearTimeout(timeout);
+                        console.error('[WatermarkEngine] bg_96.png 加载失败:', err);
+                        reject(new Error(`背景图片 bg_96.png 加载失败，路径: ${BG_96_PATH}`));
+                    };
+                    bg96.src = BG_96_PATH;
+                })
+            ]);
+
+            console.log('[WatermarkEngine] 所有资源加载完成，创建引擎实例');
+            return new WatermarkEngine({ bg48, bg96 });
+        } catch (error) {
+            console.error('[WatermarkEngine] 创建失败:', error);
+            throw error;
+        }
     }
 
     /**
