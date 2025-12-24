@@ -22,12 +22,19 @@ function App() {
   const [loading, setLoading] = useState(false)
   const [loadingText, setLoadingText] = useState('')
   const zoomRef = useRef(null)
+  const engineInitialized = useRef(false)
 
   useEffect(() => {
     async function initEngine() {
+      // Prevent re-initialization
+      if (engineInitialized.current) {
+        console.log('[App] Engine already initialized, skipping...')
+        return
+      }
+
       try {
         setLoading(true)
-        setLoadingText(t('status.loading'))
+        setLoadingText('正在加载资源...')
         console.log('[App] 开始初始化 WatermarkEngine...')
 
         // Add timeout to prevent hanging
@@ -42,6 +49,7 @@ function App() {
 
         console.log('[App] WatermarkEngine 初始化成功')
         setEngine(engineInstance)
+        engineInitialized.current = true
         setLoading(false)
 
         // Initialize medium-zoom
@@ -57,10 +65,10 @@ function App() {
       }
     }
 
-    if (!i18nLoading) {
+    if (!i18nLoading && !engineInitialized.current) {
       initEngine()
     }
-  }, [i18nLoading, t])
+  }, [i18nLoading])
 
   const handleFiles = async (files) => {
     const validFiles = files.filter(file => {
