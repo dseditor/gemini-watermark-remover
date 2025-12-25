@@ -1,5 +1,10 @@
 const i18n = {
-  locale: localStorage.getItem('locale') || (navigator.language.startsWith('zh') ? 'zh-CN' : 'en-US'),
+  locale: localStorage.getItem('locale') || (() => {
+    const lang = navigator.language;
+    if (lang.startsWith('zh-TW') || lang.startsWith('zh-HK')) return 'zh-TW';
+    if (lang.startsWith('zh')) return 'zh-CN';
+    return 'en-US';
+  })(),
   translations: {},
 
   async init() {

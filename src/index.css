@@ -2,23 +2,101 @@
 @tailwind components;
 @tailwind utilities;
 
-body {
-  font-family: ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+@layer base {
+  body {
+    font-family: 'Inter', ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+    background: linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%);
+    background-attachment: fixed;
+    color: #e0e7ff;
+  }
 }
 
+/* Neon Glow Animations */
+@keyframes neon-pulse {
+  0%, 100% {
+    filter: drop-shadow(0 0 5px currentColor) drop-shadow(0 0 15px currentColor);
+  }
+  50% {
+    filter: drop-shadow(0 0 10px currentColor) drop-shadow(0 0 25px currentColor);
+  }
+}
+
+@keyframes gradient-shift {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+/* Glass Morphism Utilities */
+.glass {
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+}
+
+.glass-dark {
+  background: rgba(15, 12, 41, 0.7);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.5);
+}
+
+.neon-border {
+  border: 2px solid;
+  border-image: linear-gradient(45deg, #00f5ff, #ff00ff, #00f5ff) 1;
+  animation: neon-pulse 2s ease-in-out infinite;
+}
+
+.neon-text {
+  text-shadow: 
+    0 0 10px currentColor,
+    0 0 20px currentColor,
+    0 0 30px currentColor,
+    0 0 40px currentColor;
+}
+
+.gradient-animate {
+  background-size: 200% 200%;
+  animation: gradient-shift 3s ease infinite;
+}
+
+/* Custom Scrollbar */
 ::-webkit-scrollbar {
-  width: 10px;
+  width: 12px;
 }
 
 ::-webkit-scrollbar-track {
-  background: #f1f1f1;
+  background: rgba(15, 12, 41, 0.5);
+  border-radius: 10px;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #10B981;
-  border-radius: 4px;
+  background: linear-gradient(180deg, #00f5ff 0%, #ff00ff 100%);
+  border-radius: 10px;
+  border: 2px solid rgba(15, 12, 41, 0.5);
 }
 
+::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, #00d4ff 0%, #dd00dd 100%);
+}
+
+/* Step Arrow with Neon Effect */
 .step-arrow::after {
   content: '';
   position: absolute;
@@ -27,8 +105,9 @@ body {
   transform: translateY(-50%);
   border-top: 15px solid transparent;
   border-bottom: 15px solid transparent;
-  border-left: 15px solid #F3F4F6;
+  border-left: 15px solid rgba(255, 255, 255, 0.1);
   z-index: 10;
+  filter: drop-shadow(0 0 5px rgba(0, 245, 255, 0.5));
 }
 
 @media (min-width: 768px) {
@@ -48,19 +127,84 @@ body {
   }
 }
 
+/* Loading States */
 body.loading {
   opacity: 0;
 }
 
 body {
-  transition: opacity 0s;
+  transition: opacity 0.3s ease;
 }
 
+/* Medium Zoom Overlay */
 .medium-zoom-overlay,
 .medium-zoom-image--opened {
   z-index: 999;
 }
 
 .medium-zoom-overlay {
-  backdrop-filter: blur(4px);
+  backdrop-filter: blur(20px);
+  background: rgba(15, 12, 41, 0.9) !important;
+}
+
+/* Button Hover Effects */
+.btn-neon {
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.btn-neon::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: left 0.5s ease;
+}
+
+.btn-neon:hover::before {
+  left: 100%;
+}
+
+.btn-neon:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 0 20px currentColor, 0 0 40px currentColor;
+}
+
+/* Card Hover Effects */
+.card-glass {
+  transition: all 0.3s ease;
+}
+
+.card-glass:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 12px 40px 0 rgba(0, 245, 255, 0.3);
+  border-color: rgba(0, 245, 255, 0.5);
+}
+
+/* Upload Area Glow */
+.upload-glow {
+  transition: all 0.3s ease;
+}
+
+.upload-glow:hover {
+  box-shadow: 
+    0 0 20px rgba(0, 245, 255, 0.4),
+    0 0 40px rgba(255, 0, 255, 0.2),
+    inset 0 0 20px rgba(0, 245, 255, 0.1);
+}
+
+/* Progress Bar Neon */
+.progress-neon {
+  background: linear-gradient(90deg, #00f5ff, #ff00ff);
+  box-shadow: 0 0 10px #00f5ff, 0 0 20px #ff00ff;
+  animation: gradient-shift 2s ease infinite;
+}
+
+/* Floating Animation */
+.float-animation {
+  animation: float 3s ease-in-out infinite;
 }

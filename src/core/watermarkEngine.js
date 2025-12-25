@@ -5,6 +5,7 @@
 
 import { calculateAlphaMap } from './alphaMap.js';
 import { removeWatermark } from './blendModes.js';
+import { processWithResize } from './imageResizer.js';
 import BG_48_PATH from '../assets/bg_48.png';
 import BG_96_PATH from '../assets/bg_96.png';
 
@@ -147,39 +148,47 @@ export class WatermarkEngine {
         return alphaMap;
     }
 
+
     /**
      * Remove watermark from image based on watermark size
+     * Automatically handles resizing for non-standard image sizes
      * @param {HTMLImageElement|HTMLCanvasElement} image - Input image
-     * @returns {Promise<HTMLCanvasElement>} Processed canvas
+     * @returns {Promise<HTMLCanvasElement>} Processed canvas at original size
      */
     async removeWatermarkFromImage(image) {
-        // Create canvas to process image
-        const canvas = document.createElement('canvas');
-        canvas.width = image.width;
-        canvas.height = image.height;
-        const ctx = canvas.getContext('2d');
+        const self = this;
 
-        // Draw original image onto canvas
-        ctx.drawImage(image, 0, 0);
+        // Use processWithResize to handle automatic resizing if needed
+        return await processWithResize(image, async (imageOrCanvas) => {
+            // Create canvas to process image
+            const canvas = document.createElement('canvas');
+            canvas.width = imageOrCanvas.width;
+            canvas.height = imageOrCanvas.height;
+            const ctx = canvas.getContext('2d');
 
-        // Get image data
-        const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+            // Draw original image onto canvas
+            ctx.drawImage(imageOrCanvas, 0, 0);
 
-        // Detect watermark configuration
-        const config = detectWatermarkConfig(canvas.width, canvas.height);
-        const position = calculateWatermarkPosition(canvas.width, canvas.height, config);
+            // Get image data
+            const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
 
-        // Get alpha map for watermark size
-        const alphaMap = await this.getAlphaMap(config.logoSize);
+            // Detect watermark configuration
+            const config = detectWatermarkConfig(canvas.width, canvas.height);
+            const position = calculateWatermarkPosition(canvas.width, canvas.height, config);
 
-        // Remove watermark from image data
-        removeWatermark(imageData, alphaMap, position);
+            // Get alpha map for watermark size
+            const alphaMap = await self.getAlphaMap(config.logoSize);
 
-        // Write processed image data back to canvas
-        ctx.putImageData(imageData, 0, 0);
+            // Remove watermark from image data
+            removeWatermark(imageData, alphaMap, position);
 
-        return canvas;
+            // Write processed image data back to canvas
+            ctx.putImageData(imageData, 0, 0);
+
+            return canvas;
+        });
     }
+
 
     /**
      * Get watermark information (for display)

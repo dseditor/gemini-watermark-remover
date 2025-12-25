@@ -7,7 +7,6 @@ import mediumZoom from 'medium-zoom'
 import Header from './components/Header.jsx'
 import Footer from './components/Footer.jsx'
 import UploadArea from './components/UploadArea.jsx'
-import Steps from './components/Steps.jsx'
 import SinglePreview from './components/SinglePreview.jsx'
 import MultiPreview from './components/MultiPreview.jsx'
 import LoadingOverlay from './components/LoadingOverlay.jsx'
@@ -217,8 +216,15 @@ function App() {
     const blob = await zip.generateAsync({ type: 'blob' })
     const a = document.createElement('a')
     a.href = URL.createObjectURL(blob)
-    a.download = `unwatermarked_${Date.now()}.zip`
+
+    // Create descriptive filename with date and count
+    const date = new Date().toISOString().slice(0, 10).replace(/-/g, '')
+    a.download = `gemini_unwatermarked_${completed.length}張_${date}.zip`
+
     a.click()
+
+    // Clean up URL object
+    setTimeout(() => URL.revokeObjectURL(a.href), 100)
   }
 
   if (i18nLoading) {
@@ -226,24 +232,26 @@ function App() {
   }
 
   return (
-    <div className="bg-white text-gray-800 antialiased selection:bg-primary selection:text-white flex flex-col min-h-screen">
-      <Header locale={locale} onLanguageSwitch={switchLocale} t={t} />
+    <div className="min-h-screen flex flex-col">
+      <Header t={t} />
 
       <main className="flex-grow">
         <section className="relative pt-16 pb-12 lg:pt-24 lg:pb-20 text-center px-4 overflow-hidden">
-          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-emerald-50 via-white to-white -z-10"></div>
+          {/* Animated Background */}
+          <div className="absolute inset-0 -z-10">
+            <div className="absolute top-0 left-1/4 w-96 h-96 bg-cyan-500/20 rounded-full blur-3xl animate-pulse"></div>
+            <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-purple-500/20 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }}></div>
+          </div>
 
-          <h2 className="bg-clip-text bg-gradient-to-br font-extrabold from-slate-900 mb-6 md:text-6xl text-3xl text-transparent to-slate-700 tracking-tighter">
+          <h2 className="bg-clip-text bg-gradient-to-r from-cyan-400 via-purple-400 to-pink-400 font-extrabold mb-6 md:text-6xl text-3xl text-transparent tracking-tighter gradient-animate neon-text">
             {t('main.title')}
           </h2>
-          <p className="text-base md:text-lg text-gray-500 max-w-2xl mx-auto mb-10">
+          <p className="text-base md:text-lg text-cyan-100/80 max-w-2xl mx-auto mb-10">
             {t('main.subtitle')}
           </p>
 
           <UploadArea onFilesSelected={handleFiles} t={t} />
         </section>
-
-        <Steps t={t} />
 
         {showSingle && imageQueue.length > 0 && (
           <SinglePreview
@@ -263,39 +271,6 @@ function App() {
             t={t}
           />
         )}
-
-        <section className="bg-gray-50 py-16 border-t border-gray-100">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="text-center mb-6 md:mb-12">
-              <h3 className="text-2xl font-bold text-gray-900">{t('feature.title')}</h3>
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-8">
-              <div className="bg-white p-6 rounded-xl shadow-sm hover:shadow-md transition-shadow">
-                <div className="w-12 h-12 bg-emerald-100 text-primary rounded-lg flex items-center justify-center mb-4">
-                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
-                </div>
-                <h4 className="text-lg font-bold text-gray-900 mb-2">{t('feature.speed.title')}</h4>
-                <p className="text-gray-500 text-sm leading-relaxed">{t('feature.speed.desc')}</p>
-              </div>
-              <div className="bg-white p-6 rounded-xl shadow-sm hover:shadow-md transition-shadow">
-                <div className="w-12 h-12 bg-blue-100 text-blue-600 rounded-lg flex items-center justify-center mb-4">
-                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
-                </div>
-                <h4 className="text-lg font-bold text-gray-900 mb-2">{t('feature.privacy.title')}</h4>
-                <p className="text-gray-500 text-sm leading-relaxed">{t('feature.privacy.desc')}</p>
-              </div>
-              <div className="bg-white p-6 rounded-xl shadow-sm hover:shadow-md transition-shadow">
-                <div className="w-12 h-12 bg-purple-100 text-purple-600 rounded-lg flex items-center justify-center mb-4">
-                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z M6 6l12 12"></path>
-                  </svg>
-                </div>
-                <h4 className="text-lg font-bold text-gray-900 mb-2">{t('feature.free.title')}</h4>
-                <p className="text-gray-500 text-sm leading-relaxed">{t('feature.free.desc')}</p>
-              </div>
-            </div>
-          </div>
-        </section>
       </main>
 
       <Footer t={t} />

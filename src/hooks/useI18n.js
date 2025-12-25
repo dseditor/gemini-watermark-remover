@@ -1,9 +1,7 @@
 import { useState, useEffect, useCallback } from 'react'
 
 export function useI18n() {
-  const [locale, setLocale] = useState(
-    localStorage.getItem('locale') || (navigator.language.startsWith('zh') ? 'zh-CN' : 'en-US')
-  )
+  const [locale, setLocale] = useState('zh-TW')
   const [translations, setTranslations] = useState({})
   const [isLoading, setIsLoading] = useState(true)
 
